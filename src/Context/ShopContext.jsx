@@ -143,31 +143,64 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  const getUserCart = async (token) => {
+  // const getUserCart = async (token) => {
+  //   try {
+  //     const response = await axios.post(backendUrl + `/api/cart/get`, {}, {
+  //       headers: { Authorization: `Bearer ${token}` } 
+  //     });
+  //     if (response.data.success) {
+  //       setCartItem(response.data.cartData);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching cart data:", error);
+  //     toast.error(error.response ? error.response.data.message : error.message);
+  //   }
+  // };
+  const getUserCart = async (token, userId) => {
     try {
-      const response = await axios.post(backendUrl + `/api/cart/get`, {}, {
-        headers: { Authorization: `Bearer ${token}` } 
-      });
-      if (response.data.success) {
-        setCartItem(response.data.cartData);
+      if (!userId) {
+        toast.error("User ID not found");
+        return;
       }
+  
+      const response = await axios.post(backendUrl + `/api/cart/get`, { userId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      if (response.data.status === "success") {
+        setCartItem(response.data.cartData);
+      } else {
+        toast.error(response.data.message || "Failed to fetch cart");
+      }
+  
     } catch (error) {
       console.error("Error fetching cart data:", error);
       toast.error(error.response ? error.response.data.message : error.message);
     }
   };
   
+  
   useEffect(() => {
     getProductsData();
   }, []);
 
+  // useEffect(() => {
+  //   const storedToken = localStorage.getItem("token");
+  //   if (storedToken) {
+  //     setToken(storedToken);
+  //     getUserCart(storedToken);
+  //   }
+  // }, []);
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    if (storedToken) {
+    const storedUserId = localStorage.getItem("userId");  // <-- userId stored in localStorage
+  
+    if (storedToken && storedUserId) {
       setToken(storedToken);
-      getUserCart(storedToken);
+      getUserCart(storedToken, storedUserId);
     }
   }, []);
+  
 
   const value = {
     products,

@@ -176,6 +176,7 @@
 // }
 
 // export default Login;
+// 
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from '../Context/ShopContext';
 import axios from "axios";
@@ -236,6 +237,10 @@ function Login() {
           if (response?.data) {
             setToken(response.data.token);
             localStorage.setItem("token", response.data.token);
+
+            // ✅ Save userId to localStorage
+            localStorage.setItem("userId", response.data.user._id);
+
             toast.success(response.data.message);
           } else {
             toast.error(response.data.message);
@@ -255,13 +260,17 @@ function Login() {
         if (response?.data?.token) {
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
+
+          // ✅ Save userId to localStorage
+          localStorage.setItem("userId", response.data.user._id);
+
           toast.success(response.data.message);
         } else {
           toast.error(response.data.message);
         }
       } catch (err) {
-        console.log(err.response.data.message);
-        toast.error(err.response.data.message);
+        console.log(err.response?.data?.message);
+        toast.error(err.response?.data?.message);
       }
     }
   };
@@ -346,3 +355,4 @@ function Login() {
 }
 
 export default Login;
+
